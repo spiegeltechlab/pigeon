@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/index.js"
+    "test": "node test/index.js",
+    "build": "esbuild --bundle --minify --format=esm --outfile=dist/pigeon.esm.js index.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,8 @@
     "patch",
     "merge",
     "automerge"
-  ]
+  ],
+  "dependencies": {
+    "esbuild": "^0.23.1"
+  }
 }
