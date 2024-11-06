@@ -9,8 +9,10 @@ function diff(left, right) {
     throw new Error("can't diff different types");
   }
 
-  if (_isPrimitive(left) || _isArrayOfPrimitives(left)) {
+  if (_isPrimitive(left)) {
     return diffPrimitive(left, right);
+  } else if (_isArrayOfPrimitives(left)) {
+    return diffPrimitiveArray(left, right);
   } else if (type == 'array') {
     return diffArray(left, right);
   } else if (type == 'object') {
@@ -23,6 +25,22 @@ function diff(left, right) {
 
 function diffPrimitive(l, r, path='/') {
   if (l !== r) {
+    return [_op('replace', _path(path), { value: r,  _prev: l, })];
+  } else {
+    return [];
+  }
+}
+
+function diffPrimitiveArray(l, r, path='/') {
+
+  let hasChange = !_isArrayOfPrimitives(r) || l.length !== r.length;
+  if (!hasChange) {
+    for (let i = 0; i < l.length; i++) {
+      hasChange = hasChange || l[i] !== r[i];
+    }
+  }
+
+  if (hasChange) {
     return [_op('replace', _path(path), { value: r,  _prev: l, })];
   } else {
     return [];
@@ -118,8 +136,10 @@ function diffObject(l, r, path='/', ref) {
 
     const type = _typeof(l[k]);
 
-    if (_isPrimitive(l[k]) || _isArrayOfPrimitives(l[k])) {
+    if (_isPrimitive(l[k])) {
       ops.push(...diffPrimitive(l[k], r[k], _path(path, k), ref));
+    } else  if (_isArrayOfPrimitives(l[k])) {
+      ops.push(...diffPrimitiveArray(l[k], r[k], _path(path, k), ref));
     } else if (type !== _typeof(r[k])) {
       ops.push({ op: 'replace', path: _path(path, k), value: _clone(r[k]), _prev: _clone(l[k]) });
     } else if (type === 'array') {
