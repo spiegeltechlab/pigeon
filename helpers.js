@@ -48,6 +48,10 @@ function _isPrimitive(x) {
   return t === 'number' || t === 'null' || t === 'boolean' || t == 'string';
 }
 
+function _isArrayOfPrimitives(x) {
+  return _typeof(x) === 'array' && x.every((item) => _isPrimitive(item));
+}
+
 function _clone(x) {
   const type = _typeof(x);
   if (type == 'array') {
@@ -132,6 +136,7 @@ module.exports = {
   _path,
   _typeof,
   _isPrimitive,
+  _isArrayOfPrimitives,
   _clone,
   _entangled,
   _objId,

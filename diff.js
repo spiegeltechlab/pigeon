@@ -1,4 +1,4 @@
-const { _path, _typeof, _isPrimitive, _clone, _entangled, _objId, _op, _config } = require('./helpers');
+const { _path, _typeof, _isPrimitive, _isArrayOfPrimitives, _clone, _entangled, _op, _config } = require('./helpers');
 
 
 function diff(left, right) {
@@ -9,12 +9,12 @@ function diff(left, right) {
     throw new Error("can't diff different types");
   }
 
-  if (type == 'array') {
+  if (_isPrimitive(left) || _isArrayOfPrimitives(left)) {
+    return diffPrimitive(left, right);
+  } else if (type == 'array') {
     return diffArray(left, right);
   } else if (type == 'object') {
     return diffObject(left, right);
-  } else if (_isPrimitive(left)) {
-    return diffPrimitive(left, right);
   } else {
     throw new Error("unsupported type");
   }
@@ -118,7 +118,7 @@ function diffObject(l, r, path='/', ref) {
 
     const type = _typeof(l[k]);
 
-    if (_isPrimitive(l[k])) {
+    if (_isPrimitive(l[k]) || _isArrayOfPrimitives(l[k])) {
       ops.push(...diffPrimitive(l[k], r[k], _path(path, k), ref));
     } else if (type !== _typeof(r[k])) {
       ops.push({ op: 'replace', path: _path(path, k), value: _clone(r[k]), _prev: _clone(l[k]) });
