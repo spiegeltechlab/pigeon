@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "node test/index.js",
-    "build": "esbuild --bundle --minify --format=esm --outfile=dist/pigeon.esm.js index.js"
+    "build": "npm run build-node && npm run build-esm",
+    "build-esm": "esbuild --bundle --minify --format=esm --outfile=dist/pigeon.esm.js index.js",
+    "build-node": "esbuild --bundle --minify --global-name=Pigeon --outfile=dist/pigeon.js index.js"
   },
   "repository": {
     "type": "git",
