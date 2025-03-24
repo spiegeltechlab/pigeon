@@ -377,6 +377,7 @@ suite('auto', test => {
     assert.deepEqual(doc1, { cards: ['A♤'] });
   });
 
+  // FAILED: (even before the reverse update)
   test('alias', async() => {
     let doc1 = AutoPigeon.from({ cards: [] });
     let doc2 = AutoPigeon.alias(doc1);

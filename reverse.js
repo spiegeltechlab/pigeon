@@ -10,12 +10,28 @@ function reverse(changes) {
       change.op = 'remove';
       const id = _objId(change.value);
       if (id) {
-        change._index = change.path.split('/').pop();
-        change.path = change.path.replace(/\d+$/, `[${id}]`);
+        const parts = change.path.split('/');
+        const lastPart = parts[parts.length - 1];
+
+        if (!lastPart.startsWith('[') && !lastPart.endsWith(']')) {
+          // replace '/array/0' with '/array/[objId]'
+          parts[parts.length - 1] = `[${id}]`;
+          change.path = parts.join('/');
+        } else if (lastPart.startsWith('[') && lastPart.endsWith(']')) {
+          // replace' /array/[insertBeforeThisId]' with '/array/[objId]'
+          parts[parts.length - 1] = `[${id}]`;
+          change.path = parts.join('/');
+        }
       }
 
     } else if (change.op == 'remove') {
       change.op = 'add';
+      const parts = change.path.split('/');
+      const lastPart = parts[parts.length - 1];
+      if (lastPart.startsWith('[') && lastPart.endsWith(']')) {
+        parts[parts.length - 1] = '0';
+        change.path = parts.join('/');
+      }
     }
 
     if ('_prev' in change) {

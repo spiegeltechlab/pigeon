@@ -54,6 +54,7 @@ suite('diff', test => {
     );
   });
 
+  // FAILED: (even before the reverse update)
   test('primitive array append', async () => {
     assert.deepEqual(
       diff(['a', 'b'], ['a', 'b', 'c']),
@@ -61,6 +62,7 @@ suite('diff', test => {
     );
   });
 
+  // FAILED: (even before the reverse update)
   test('primitive array prepend', async () => {
     assert.deepEqual(
       diff(['a', 'b'], ['z', 'a', 'b']),
@@ -68,6 +70,7 @@ suite('diff', test => {
     );
   });
 
+  // FAILED: (even before the reverse update)
   test('primitive array remove', async () => {
     assert.deepEqual(
       diff(['a', 'b', 'c', 'd', 'e'], ['a', 'b', 'd', 'e']),
@@ -75,6 +78,7 @@ suite('diff', test => {
     );
   });
 
+  // FAILED: (even before the reverse update)
   test('primitive array "replace"', async () => {
     assert.deepEqual(
       diff(['a', 'b', 'c'], ['a', 'b', 'x']),
@@ -178,6 +182,7 @@ suite('diff', test => {
     );
   })
 
+  // FAILED: (even before the reverse update)
   test('array order shuffle literals', async () => {
     assert.deepEqual(
       diff(
@@ -220,6 +225,7 @@ suite('diff', test => {
     );
   })
 
+  // FAILED: (even before the reverse update)
   test('array remove and re-order literal', async () => {
     assert.deepEqual(
       diff(
@@ -233,6 +239,7 @@ suite('diff', test => {
     );
   })
 
+  // FAILED: (even before the reverse update)
   test('array remove and re-order literal longer', async () => {
     assert.deepEqual(
       diff(
