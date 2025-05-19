@@ -52,38 +52,33 @@ suite('diff', test => {
       diff(['a', 'b', 'c'], ['a', 'b', 'c']),
       []
     );
-  });
+  }); 
 
-  // FAILED: (even before the reverse update)
-  test('primitive array append', async () => {
+  test('primitive array append (replace)', async () => {
     assert.deepEqual(
       diff(['a', 'b'], ['a', 'b', 'c']),
-      [ { op: 'add', path: '/2', value: 'c' } ]
+      [ { op: 'replace', path: '/', value: ['a', 'b', 'c'], _prev: ['a', 'b'] } ]
     );
   });
 
-  // FAILED: (even before the reverse update)
-  test('primitive array prepend', async () => {
+  test('primitive array prepend (replace)', async () => {
     assert.deepEqual(
       diff(['a', 'b'], ['z', 'a', 'b']),
-      [ { op: 'add', path: '/0', value: 'z' } ]
+      [ { op: 'replace', path: '/', value: ['z', 'a', 'b'], _prev: ['a', 'b'] } ]
     );
   });
 
-  // FAILED: (even before the reverse update)
-  test('primitive array remove', async () => {
+  test('primitive array remove (replace)', async () => {
     assert.deepEqual(
       diff(['a', 'b', 'c', 'd', 'e'], ['a', 'b', 'd', 'e']),
-      [ { op: 'remove', path: '/2', _prev: 'c' } ]
+      [ { op: 'replace', path: '/', value: ['a', 'b', 'd', 'e'], _prev: ['a', 'b', 'c', 'd', 'e'] } ]
     );
   });
-
-  // FAILED: (even before the reverse update)
-  test('primitive array "replace"', async () => {
+ 
+  test('primitive array replace', async () => {
     assert.deepEqual(
       diff(['a', 'b', 'c'], ['a', 'b', 'x']),
-      [ { op: 'remove', path: '/2', _prev: 'c' },
-        { op: 'add', path: '/2', value: 'x' } ]
+      [ { op: 'replace', path: '/', value: ['a', 'b', 'x'], _prev: ['a', 'b', 'c'] } ]
     );
   });
 
@@ -182,17 +177,13 @@ suite('diff', test => {
     );
   })
 
-  // FAILED: (even before the reverse update)
   test('array order shuffle literals', async () => {
     assert.deepEqual(
       diff(
         [ 'def', 'abc', 'ghi' ],
         [ 'abc', 'def', 'ghi' ],
       ),
-      [
-        { from: '/1', op: 'move', path: '/0' },
-        { from: '/0', op: 'move', path: '/1' } // TODO: fix this bogus second change
-      ]
+      [ { op: 'replace', path: '/', value: [ 'abc', 'def', 'ghi' ], _prev: [ 'def', 'abc', 'ghi' ] } ]
     );
   })
 
@@ -225,34 +216,23 @@ suite('diff', test => {
     );
   })
 
-  // FAILED: (even before the reverse update)
-  test('array remove and re-order literal', async () => {
+  test('primitive array remove and re-order literal', async () => {
     assert.deepEqual(
       diff(
         [ 'abc', 'def', 'hij' ],
         [ 'hij', 'def' ],
       ),
-      [
-        { op: 'remove', path: '/0', _prev: 'abc' },
-        { op: 'move', from: '/2', path: '/0' },
-      ]
+      [ { op: 'replace', path: '/', value: [ 'hij', 'def' ], _prev: [ 'abc', 'def', 'hij' ] } ]
     );
   })
 
-  // FAILED: (even before the reverse update)
-  test('array remove and re-order literal longer', async () => {
+  test('primitive array remove and re-order literal longer', async () => {
     assert.deepEqual(
       diff(
         [ 'abc', 'def', '000', 'hij', 'klm', 'nop' ],
         [ 'hij', 'nop', 'def', '000', 'klm' ],
       ),
-      [
-        { _prev: 'abc', op: 'remove', path: '/0' },
-        { from: '/3', op: 'move', path: '/0' },
-        { from: '/5', op: 'move', path: '/1' },
-        { from: '/1', op: 'move', path: '/2' },
-        { from: '/2', op: 'move', path: '/3' }
-      ]
+      [ { op: 'replace', path: '/', value: [ 'hij', 'nop', 'def', '000', 'klm' ], _prev: [ 'abc', 'def', '000', 'hij', 'klm', 'nop' ] } ]
     );
   })
 
