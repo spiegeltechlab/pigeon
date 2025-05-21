@@ -6,7 +6,7 @@ const { _clone, _crc, _configure, _config } = require('./helpers');
 let HISTORY_LENGTH = 1000;
 
 const meta = new WeakMap();
-const _cid = _id();
+const _client_id = _id();
 
 class AutoPigeon {
 
@@ -19,16 +19,16 @@ class AutoPigeon {
     });
   }
 
-  static from(data, cid=_cid) {
+  static from(data, client_id=_client_id) {
     let doc = new AutoPigeon();
-    meta.get(doc).cid = cid;
+    meta.get(doc).client_id = client_id;
     doc = AutoPigeon.change(doc, doc => Object.assign(doc, data));
     return doc;
   }
 
-  static _forge(data, cid=_cid) {
+  static _forge(data, client_id=_client_id) {
     let doc = new AutoPigeon();
-    meta.get(doc).cid = cid;
+    meta.get(doc).client_id = client_id;
     Object.assign(doc, _clone(data));
     return doc;
   }
@@ -67,7 +67,7 @@ class AutoPigeon {
     const _diff = diff(left, right);
     const changes = {
       diff: _diff,
-      cid: meta.get(left).cid,
+      client_id: meta.get(left).client_id,
       ts: _config.getTimestamp(),
       seq: _seq(),
       gid: _id(),
@@ -75,14 +75,14 @@ class AutoPigeon {
     return changes;
   }
 
-  static rewindChanges(doc, ts, cid) {
+  static rewindChanges(doc, ts, client_id) {
 
     const { history } = meta.get(doc);
 
     while (true) {
       if (history.length <= 1) break;
       const change = history[history.length - 1];
-      if (change.ts > ts || (change.ts == ts && change.cid > cid)) {
+      if (change.ts > ts || (change.ts == ts && change.client_id > client_id)) {
         const c = meta.get(doc).history.pop();
         patch(doc, reverse(c.diff));
         delete meta.get(doc).gids[c.gid];
@@ -114,7 +114,7 @@ class AutoPigeon {
       return newDoc;
     }
     try {
-      AutoPigeon.rewindChanges(newDoc, changes.ts, changes.cid);
+      AutoPigeon.rewindChanges(newDoc, changes.ts, changes.client_id);
     } catch (e) {
       meta.get(newDoc).warning = 'rewind failed: ' + e;
     }
@@ -213,7 +213,7 @@ class AutoPigeon {
   }
 
   static save(doc) {
-    const { cid, ..._meta } = meta.get(doc);
+    const { client_id, ..._meta } = meta.get(doc);
     return JSON.stringify({
       meta: _meta,
       data: doc,

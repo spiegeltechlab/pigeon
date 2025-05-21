@@ -56,7 +56,7 @@ npm install @frameable/pigeon
 
 ## API
 
-#### newDoc = Pigeon.from(data, cid=_cid)
+#### newDoc = Pigeon.from(data, client_id=_client_id)
 
 Create a document from an array or object.
 
@@ -72,7 +72,7 @@ Make an alias to an existing doc; analogous to a hardlink.
 
 Get the set of changes that would transform `left` into `right`.
 
-#### newDoc = Pigeon.rewindChanges(doc, ts, cid)
+#### newDoc = Pigeon.rewindChanges(doc, ts, client_id)
 
 Roll back the document state back to the given timestamp.
 
