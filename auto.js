@@ -15,7 +15,7 @@ class AutoPigeon {
       history: [],
       stash: [],
       warning: null,
-      gids: {},
+      change_ids: {},
     });
   }
 
@@ -47,7 +47,7 @@ class AutoPigeon {
   static clone(doc, historyLength=HISTORY_LENGTH) {
     const clone = AutoPigeon._forge(doc);
     meta.get(clone).history = meta.get(doc).history;
-    meta.get(clone).gids = _clone(meta.get(doc).gids);
+    meta.get(clone).change_ids = _clone(meta.get(doc).change_ids);
     AutoPigeon.pruneHistory(meta.get(clone), historyLength)
     return clone;
   }
@@ -57,7 +57,7 @@ class AutoPigeon {
     if (docHistoryLength > historyLength) {
       const prunedHistory = meta.history.slice(0, docHistoryLength - historyLength);
       for (const item of prunedHistory) {
-        delete meta.gids[item.gid];
+        delete meta.change_ids[item.change_id];
       }
     }
     meta.history = meta.history.slice(-historyLength);
@@ -70,7 +70,7 @@ class AutoPigeon {
       client_id: meta.get(left).client_id,
       ts: _config.getTimestamp(),
       seq: _seq(),
-      gid: _id(),
+      change_id: _id(),
     }
     return changes;
   }
@@ -85,7 +85,7 @@ class AutoPigeon {
       if (change.ts > ts || (change.ts == ts && change.client_id > client_id)) {
         const c = meta.get(doc).history.pop();
         patch(doc, reverse(c.diff));
-        delete meta.get(doc).gids[c.gid];
+        delete meta.get(doc).change_ids[c.change_id];
         meta.get(doc).stash.push(c);
         continue;
       }
@@ -98,7 +98,7 @@ class AutoPigeon {
     let change;
     while (change = stash.pop()) {
       patch(doc, change.diff);
-      meta.get(doc).gids[change.gid] = 1;
+      meta.get(doc).change_ids[change.change_id] = 1;
       history.push(change);
     }
   }
@@ -110,7 +110,7 @@ class AutoPigeon {
   static applyChanges(doc, changes, inplace) {
     meta.get(doc).warning = null;
     const newDoc = inplace ? doc : AutoPigeon.clone(doc);
-    if (meta.get(doc).gids[changes.gid]) {
+    if (meta.get(doc).change_ids[changes.change_id]) {
       return newDoc;
     }
     try {
@@ -120,7 +120,7 @@ class AutoPigeon {
     }
     try {
       patch(newDoc, changes.diff);
-      meta.get(newDoc).gids[changes.gid] = 1;
+      meta.get(newDoc).change_ids[changes.change_id] = 1;
     } catch (e) {
       meta.get(newDoc).warning = 'patch failed: ' + e;
     }
@@ -159,7 +159,7 @@ class AutoPigeon {
       } else if (!history1.length) {
         changes.push(history2.shift());
 
-      } else if (history1[0].gid === history2[0].gid) {
+      } else if (history1[0].change_id === history2[0].change_id) {
         changes.push(history1.shift() && history2.shift());
 
       } else if (history1[0].ts < history2[0].ts) {
