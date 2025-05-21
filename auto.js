@@ -15,20 +15,20 @@ class AutoPigeon {
       history: [],
       stash: [],
       warning: null,
-      change_ids: {},
+      changeIds: {},
     });
   }
 
-  static from(data, client_id=_client_id) {
+  static from(data, clientId=_client_id) {
     let doc = new AutoPigeon();
-    meta.get(doc).client_id = client_id;
+    meta.get(doc).client_id = clientId;
     doc = AutoPigeon.change(doc, doc => Object.assign(doc, data));
     return doc;
   }
 
-  static _forge(data, client_id=_client_id) {
+  static _forge(data, clientId=_client_id) {
     let doc = new AutoPigeon();
-    meta.get(doc).client_id = client_id;
+    meta.get(doc).client_id = clientId;
     Object.assign(doc, _clone(data));
     return doc;
   }
@@ -47,7 +47,7 @@ class AutoPigeon {
   static clone(doc, historyLength=HISTORY_LENGTH) {
     const clone = AutoPigeon._forge(doc);
     meta.get(clone).history = meta.get(doc).history;
-    meta.get(clone).change_ids = _clone(meta.get(doc).change_ids);
+    meta.get(clone).changeIds = _clone(meta.get(doc).changeIds);
     AutoPigeon.pruneHistory(meta.get(clone), historyLength)
     return clone;
   }
@@ -57,7 +57,7 @@ class AutoPigeon {
     if (docHistoryLength > historyLength) {
       const prunedHistory = meta.history.slice(0, docHistoryLength - historyLength);
       for (const item of prunedHistory) {
-        delete meta.change_ids[item.change_id];
+        delete meta.changeIds[item.change_id];
       }
     }
     meta.history = meta.history.slice(-historyLength);
@@ -75,17 +75,17 @@ class AutoPigeon {
     return changes;
   }
 
-  static rewindChanges(doc, timestamp_ms, client_id) {
+  static rewindChanges(doc, timestampMs, clientId) {
 
     const { history } = meta.get(doc);
 
     while (true) {
       if (history.length <= 1) break;
       const change = history[history.length - 1];
-      if (change.timestamp_ms > timestamp_ms || (change.timestamp_ms == timestamp_ms && change.client_id > client_id)) {
+      if (change.timestamp_ms > timestampMs || (change.timestamp_ms == timestampMs && change.client_id > clientId)) {
         const c = meta.get(doc).history.pop();
         patch(doc, reverse(c.diff));
-        delete meta.get(doc).change_ids[c.change_id];
+        delete meta.get(doc).changeIds[c.change_id];
         meta.get(doc).stash.push(c);
         continue;
       }
@@ -98,7 +98,7 @@ class AutoPigeon {
     let change;
     while (change = stash.pop()) {
       patch(doc, change.diff);
-      meta.get(doc).change_ids[change.change_id] = 1;
+      meta.get(doc).changeIds[change.change_id] = 1;
       history.push(change);
     }
   }
@@ -110,7 +110,7 @@ class AutoPigeon {
   static applyChanges(doc, changes, inplace) {
     meta.get(doc).warning = null;
     const newDoc = inplace ? doc : AutoPigeon.clone(doc);
-    if (meta.get(doc).change_ids[changes.change_id]) {
+    if (meta.get(doc).changeIds[changes.change_id]) {
       return newDoc;
     }
     try {
@@ -120,7 +120,7 @@ class AutoPigeon {
     }
     try {
       patch(newDoc, changes.diff);
-      meta.get(newDoc).change_ids[changes.change_id] = 1;
+      meta.get(newDoc).changeIds[changes.change_id] = 1;
     } catch (e) {
       meta.get(newDoc).warning = 'patch failed: ' + e;
     }

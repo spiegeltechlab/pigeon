@@ -141,35 +141,35 @@ suite('auto', test => {
     const beforeDoc = JSON.parse(AutoPigeon.save(doc));
 
     assert.equal(beforeDoc.meta.history.length,101,'history length is 101');
-    assert.equal(Object.keys(beforeDoc.meta.change_ids).length, 101,'change_ids length is 101')
+    assert.equal(Object.keys(beforeDoc.meta.changeIds).length, 101,'changeIds length is 101')
 
     doc = AutoPigeon.clone(doc, 10);
 
     const afterDoc = JSON.parse(AutoPigeon.save(doc));
     assert.equal(afterDoc.meta.history.length, 10,'history length was truncated')
-    assert.equal(Object.keys(afterDoc.meta.change_ids).length, 10,'change_ids length was truncated')
+    assert.equal(Object.keys(afterDoc.meta.changeIds).length, 10,'changeIds length was truncated')
 
     const [ { diff } ] = AutoPigeon.getHistory(doc).slice(-1);
 
-    // verify that all items in history have a change_id in the change_ids obj
+    // verify that all items in history have a change_id in the changeIds obj
     let hasMissingChangeId = false;
     for (const item of afterDoc.meta.history) {
-      if (!afterDoc.meta.change_ids[item.change_id]) {
+      if (!afterDoc.meta.changeIds[item.change_id]) {
         hasMissingChangeId = true;
       }
     }
-    assert.equal(hasMissingChangeId,false,'all items in history have a change_id in the change_ids object');
+    assert.equal(hasMissingChangeId,false,'all items in history have a change_id in the changeIds object');
 
-    // verify that all change_ids have an associated history item
+    // verify that all changeIds have an associated history item
     let hasMissingHistoryItem = false;
-    for (const changeId of Object.keys(afterDoc.meta.change_ids)) {
+    for (const changeId of Object.keys(afterDoc.meta.changeIds)) {
       const historyItem = afterDoc.meta.history.find(h => h.change_id == changeId);
       if (!historyItem) {
         hasMissingHistoryItem = true;
       }
     }
 
-    assert.equal(hasMissingHistoryItem,false,'all change_ids have an associated history item');
+    assert.equal(hasMissingHistoryItem,false,'all changeIds have an associated history item');
 
 
     assert.deepEqual(diff, [{"op":"replace","path":"/count","value":100,"_prev":99}]);
