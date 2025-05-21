@@ -72,7 +72,7 @@ Make an alias to an existing doc; analogous to a hardlink.
 
 Get the set of changes that would transform `left` into `right`.
 
-#### newDoc = Pigeon.rewindChanges(doc, ts, client_id)
+#### newDoc = Pigeon.rewindChanges(doc, timestamp_ms, client_id)
 
 Roll back the document state back to the given timestamp.
 

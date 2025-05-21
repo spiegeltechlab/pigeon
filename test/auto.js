@@ -72,11 +72,11 @@ suite('auto', test => {
 
     // generate a change whose timestamp is older than creation
     let c1 = AutoPigeon.getChanges(doc1, doc2);
-    c1.ts = new Date() - 1000000;
+    c1.timestamp_ms = new Date() - 1000000;
 
     // and another one too
     let c2 = AutoPigeon.getChanges(doc1, doc2);
-    c2.ts = new Date() - 1000000;
+    c2.timestamp_ms = new Date() - 1000000;
 
     doc1 = AutoPigeon.applyChanges(doc1, c1);
     doc1 = AutoPigeon.applyChanges(doc1, c2);

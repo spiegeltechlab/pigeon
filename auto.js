@@ -68,21 +68,21 @@ class AutoPigeon {
     const changes = {
       diff: _diff,
       client_id: meta.get(left).client_id,
-      ts: _config.getTimestamp(),
+      timestamp_ms: _config.getTimestamp(),
       seq: _seq(),
       change_id: _id(),
     }
     return changes;
   }
 
-  static rewindChanges(doc, ts, client_id) {
+  static rewindChanges(doc, timestamp_ms, client_id) {
 
     const { history } = meta.get(doc);
 
     while (true) {
       if (history.length <= 1) break;
       const change = history[history.length - 1];
-      if (change.ts > ts || (change.ts == ts && change.client_id > client_id)) {
+      if (change.timestamp_ms > timestamp_ms || (change.timestamp_ms == timestamp_ms && change.client_id > client_id)) {
         const c = meta.get(doc).history.pop();
         patch(doc, reverse(c.diff));
         delete meta.get(doc).change_ids[c.change_id];
@@ -114,7 +114,7 @@ class AutoPigeon {
       return newDoc;
     }
     try {
-      AutoPigeon.rewindChanges(newDoc, changes.ts, changes.client_id);
+      AutoPigeon.rewindChanges(newDoc, changes.timestamp_ms, changes.client_id);
     } catch (e) {
       meta.get(newDoc).warning = 'rewind failed: ' + e;
     }
@@ -131,7 +131,7 @@ class AutoPigeon {
     }
     const history = meta.get(newDoc).history;
     let idx = history.length;
-    while (idx > 1 && history[idx - 1].ts > changes.ts) idx--;
+    while (idx > 1 && history[idx - 1].timestamp_ms > changes.timestamp_ms) idx--;
     history.splice(idx, 0, changes);
     return newDoc;
   }
@@ -162,10 +162,10 @@ class AutoPigeon {
       } else if (history1[0].change_id === history2[0].change_id) {
         changes.push(history1.shift() && history2.shift());
 
-      } else if (history1[0].ts < history2[0].ts) {
+      } else if (history1[0].timestamp_ms < history2[0].timestamp_ms) {
         changes.push(history1.shift());
 
-      } else if (history1[0].ts == history2[0].ts) {
+      } else if (history1[0].timestamp_ms == history2[0].timestamp_ms) {
 
         if (history1[0].seq < history2[0].seq) {
           changes.push(history1.shift());
