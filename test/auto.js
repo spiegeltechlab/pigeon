@@ -24,15 +24,15 @@ suite('auto', (test) => {
         let doc3 = AutoPigeon.clone(doc1);
 
         doc2 = AutoPigeon.change(doc2, (doc) => (doc.count = 1000));
-        let c1 = AutoPigeon.getChanges(doc1, doc2);
+        let c1 = AutoPigeon.getChange(doc1, doc2);
 
         await sleep(100);
 
         doc3 = AutoPigeon.change(doc1, (doc) => (doc.count += 1));
-        let c2 = AutoPigeon.getChanges(doc1, doc3);
+        let c2 = AutoPigeon.getChange(doc1, doc3);
 
-        doc1 = AutoPigeon.applyChanges(doc1, c1);
-        doc1 = AutoPigeon.applyChanges(doc1, c2);
+        doc1 = AutoPigeon.applyChange(doc1, c1);
+        doc1 = AutoPigeon.applyChange(doc1, c2);
 
         assert(doc1.count == 101);
     });
@@ -44,15 +44,15 @@ suite('auto', (test) => {
         let doc3 = AutoPigeon.clone(doc1);
 
         doc2 = AutoPigeon.change(doc2, (doc) => (doc.count = 1000));
-        let c1 = AutoPigeon.getChanges(doc1, doc2);
+        let c1 = AutoPigeon.getChange(doc1, doc2);
 
         await sleep(100);
 
         doc3 = AutoPigeon.change(doc1, (doc) => (doc.count += 1));
-        let c2 = AutoPigeon.getChanges(doc1, doc3);
+        let c2 = AutoPigeon.getChange(doc1, doc3);
 
-        doc1 = AutoPigeon.applyChanges(doc1, c2);
-        doc1 = AutoPigeon.applyChanges(doc1, c1);
+        doc1 = AutoPigeon.applyChange(doc1, c2);
+        doc1 = AutoPigeon.applyChange(doc1, c1);
 
         assert(doc1.count == 101);
     });
@@ -67,15 +67,15 @@ suite('auto', (test) => {
         });
 
         // generate a change whose timestamp is older than creation
-        let c1 = AutoPigeon.getChanges(doc1, doc2);
+        let c1 = AutoPigeon.getChange(doc1, doc2);
         c1.timestamp_ms = new Date() - 1000000;
 
         // and another one too
-        let c2 = AutoPigeon.getChanges(doc1, doc2);
+        let c2 = AutoPigeon.getChange(doc1, doc2);
         c2.timestamp_ms = new Date() - 1000000;
 
-        doc1 = AutoPigeon.applyChanges(doc1, c1);
-        doc1 = AutoPigeon.applyChanges(doc1, c2);
+        doc1 = AutoPigeon.applyChange(doc1, c1);
+        doc1 = AutoPigeon.applyChange(doc1, c2);
 
         assert(doc1.prop == 'subsequent');
     });
@@ -84,8 +84,8 @@ suite('auto', (test) => {
         let doc1 = AutoPigeon.from({ count: 100 });
         let doc2 = AutoPigeon.from({ count: 100 });
         let doc3 = AutoPigeon.change(doc2, (doc) => (doc.count = 1000));
-        let c1 = AutoPigeon.getChanges(doc2, doc3);
-        let doc4 = AutoPigeon.applyChanges(doc1, c1);
+        let c1 = AutoPigeon.getChange(doc2, doc3);
+        let doc4 = AutoPigeon.applyChange(doc1, c1);
         assert(doc4.count == 1000);
     });
 
@@ -99,11 +99,11 @@ suite('auto', (test) => {
             (doc) => (doc.user.name = 'Moe')
         );
 
-        const changeA = AutoPigeon.getChanges(docA0, docA1);
-        const changeB = AutoPigeon.getChanges(docB0, docB1);
+        const changeA = AutoPigeon.getChange(docA0, docA1);
+        const changeB = AutoPigeon.getChange(docB0, docB1);
 
-        const docA2 = AutoPigeon.applyChanges(docA1, changeB);
-        const docB2 = AutoPigeon.applyChanges(docB1, changeA);
+        const docA2 = AutoPigeon.applyChange(docA1, changeB);
+        const docB2 = AutoPigeon.applyChange(docB1, changeA);
 
         assert.deepEqual(docA2, {});
         assert.deepEqual(docB2, {});
@@ -299,14 +299,14 @@ suite('auto', (test) => {
             doc.cards.push('A♤');
         });
 
-        const changes = AutoPigeon.getChanges(doc1, doc2);
+        const changes = AutoPigeon.getChange(doc1, doc2);
 
         let doc3 = AutoPigeon.clone(doc1);
 
-        doc3 = AutoPigeon.applyChanges(doc3, changes);
+        doc3 = AutoPigeon.applyChange(doc3, changes);
         assert.deepEqual(doc3, { cards: ['A♤'] });
 
-        doc3 = AutoPigeon.applyChanges(doc3, changes);
+        doc3 = AutoPigeon.applyChange(doc3, changes);
         assert.deepEqual(doc3, { cards: ['A♤'] });
     });
 
@@ -332,14 +332,14 @@ suite('auto', (test) => {
             doc.cities[1].transport = 'L';
         });
 
-        const c2 = AutoPigeon.getChanges(doc1, doc2);
+        const c2 = AutoPigeon.getChange(doc1, doc2);
         assert(c2.diff.length, 1);
 
         let doc3 = AutoPigeon.change(doc1, (doc) => {
             doc.cities = [doc.cities[1], doc.cities[0]];
         });
 
-        const c3 = AutoPigeon.getChanges(doc1, doc3);
+        const c3 = AutoPigeon.getChange(doc1, doc3);
         assert(c3.diff.every((o) => o.op == 'move'));
         assert(c3.diff.length == 2);
     });
@@ -374,9 +374,9 @@ suite('auto', (test) => {
             doc.cities = [doc.cities[0], doc.cities[2], doc.cities[1]];
         });
 
-        const c3 = AutoPigeon.getChanges(doc1, doc3);
+        const c3 = AutoPigeon.getChange(doc1, doc3);
         assert.equal(c3.diff.length, 2);
-        doc2 = AutoPigeon.applyChanges(doc2, c3);
+        doc2 = AutoPigeon.applyChange(doc2, c3);
         assert.deepEqual(doc2, doc3, 'changes applied');
         assert.equal(c3.diff.length, 2);
     });
@@ -395,14 +395,14 @@ suite('auto', (test) => {
             doc.cities[1].transport = 'L';
         });
 
-        const c2 = AutoPigeon.getChanges(doc1, doc2);
+        const c2 = AutoPigeon.getChange(doc1, doc2);
         assert(c2.diff.length, 1);
 
         let doc3 = AutoPigeon.change(doc1, (doc) => {
             doc.cities = [doc.cities[1], doc.cities[0]];
         });
 
-        const c3 = AutoPigeon.getChanges(doc1, doc3);
+        const c3 = AutoPigeon.getChange(doc1, doc3);
         assert(c3.diff.length, 6);
 
         AutoPigeon.configure({ strict: true });
@@ -415,13 +415,13 @@ suite('auto', (test) => {
             doc.cards.push('A♤');
         });
 
-        const changes = AutoPigeon.getChanges(doc1, doc2);
+        const changes = AutoPigeon.getChange(doc1, doc2);
 
-        let doc3 = AutoPigeon.applyChanges(doc1, changes);
+        let doc3 = AutoPigeon.applyChange(doc1, changes);
         assert.deepEqual(doc3, { cards: ['A♤'] });
         assert.deepEqual(doc1, { cards: [] });
 
-        AutoPigeon.applyChangesInPlace(doc1, changes);
+        AutoPigeon.applyChangeInPlace(doc1, changes);
         assert.deepEqual(doc1, { cards: ['A♤'] });
     });
 
@@ -436,8 +436,8 @@ suite('auto', (test) => {
       doc.cards.push('A♤')
     });
 
-    const changes = AutoPigeon.getChanges(doc1, tmp);
-    AutoPigeon.applyChangesInPlace(doc1, changes);
+    const changes = AutoPigeon.getChange(doc1, tmp);
+    AutoPigeon.applyChangeInPlace(doc1, changes);
 
     assert.deepEqual(doc1, { cards: ['A♤'] });
     assert.deepEqual(doc2, { cards: ['A♤'] });
@@ -453,8 +453,8 @@ function _counter() {
 
     for (let i = 0; i < 100; i++) {
         const tmp = AutoPigeon.change(doc, (d) => d.count++);
-        const changes = AutoPigeon.getChanges(doc, tmp);
-        doc = AutoPigeon.applyChanges(doc, changes);
+        const changes = AutoPigeon.getChange(doc, tmp);
+        doc = AutoPigeon.applyChange(doc, changes);
     }
 
     return doc;

@@ -34,7 +34,7 @@ class AutoPigeon {
 
     static alias(doc) {
         console.warning(
-            'Feature is currently not supported correctly (since primitve array support'
+            'Feature is currently not supported correctly (since primitve array support)'
         );
         let alias = new AutoPigeon();
         meta.set(alias, meta.get(doc));
@@ -68,16 +68,16 @@ class AutoPigeon {
         meta.history = meta.history.slice(-historyLength);
     }
 
-    static getChanges(left, right) {
+    static getChange(left, right) {
         const _diff = diff(left, right);
-        const changes = {
+        const change = {
             diff: _diff,
             client_id: meta.get(left).client_id,
             timestamp_ms: _config.getTimestamp(),
             seq: _seq(),
             change_id: _id(),
         };
-        return changes;
+        return change;
     }
 
     static rewindChanges(doc, timestampMs, clientId) {
@@ -111,28 +111,28 @@ class AutoPigeon {
         }
     }
 
-    static applyChangesInPlace(doc, changes) {
-        return AutoPigeon.applyChanges(doc, changes, true);
+    static applyChangeInPlace(doc, change) {
+        return AutoPigeon.applyChange(doc, change, true);
     }
 
-    static applyChanges(doc, changes, inplace) {
+    static applyChange(doc, change, inplace) {
         meta.get(doc).warning = null;
         const newDoc = inplace ? doc : AutoPigeon.clone(doc);
-        if (meta.get(doc).changeIds[changes.change_id]) {
+        if (meta.get(doc).changeIds[change.change_id]) {
             return newDoc;
         }
         try {
             AutoPigeon.rewindChanges(
                 newDoc,
-                changes.timestamp_ms,
-                changes.client_id
+                change.timestamp_ms,
+                change.client_id
             );
         } catch (e) {
             meta.get(newDoc).warning = 'rewind failed: ' + e;
         }
         try {
-            patch(newDoc, changes.diff);
-            meta.get(newDoc).changeIds[changes.change_id] = 1;
+            patch(newDoc, change.diff);
+            meta.get(newDoc).changeIds[change.change_id] = 1;
         } catch (e) {
             meta.get(newDoc).warning = 'patch failed: ' + e;
         }
@@ -143,17 +143,17 @@ class AutoPigeon {
         }
         const history = meta.get(newDoc).history;
         let idx = history.length;
-        while (idx > 1 && history[idx - 1].timestamp_ms > changes.timestamp_ms)
+        while (idx > 1 && history[idx - 1].timestamp_ms > change.timestamp_ms)
             idx--;
-        history.splice(idx, 0, changes);
+        history.splice(idx, 0, change);
         return newDoc;
     }
 
     static change(doc, fn) {
         const tmp = _clone(doc);
         fn(tmp);
-        const changes = AutoPigeon.getChanges(doc, tmp);
-        return AutoPigeon.applyChanges(doc, changes);
+        const change = AutoPigeon.getChange(doc, tmp);
+        return AutoPigeon.applyChange(doc, change);
     }
 
     static getHistory(doc) {
@@ -185,8 +185,8 @@ class AutoPigeon {
             }
         }
 
-        for (const c of changes) {
-            doc = AutoPigeon.applyChanges(doc, c);
+        for (const change of changes) {
+            doc = AutoPigeon.applyChange(doc, change);
         }
         return doc;
     }

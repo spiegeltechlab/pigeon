@@ -68,9 +68,9 @@ Clone a document.
 
 Make an alias to an existing doc; analogous to a hardlink.
 
-#### changes = Pigeon.getChanges(left, right)
+#### changes = Pigeon.getChange(left, right)
 
-Get the set of changes that would transform `left` into `right`.
+Get the set of change with operations that would transform `left` into `right`.
 
 #### newDoc = Pigeon.rewindChanges(doc, timestamp_ms, client_id)
 
@@ -80,13 +80,13 @@ Roll back the document state back to the given timestamp.
 
 Roll forward the document state up to the head.
 
-#### newDoc = Pigeon.applyChanges(doc, changes)
+#### newDoc = Pigeon.applyChange(doc, change)
 
-Clone the given document to a new document and apply changes to the new document.
+Clone the given document to a new document and apply change operations to the new document.
 
-#### Pigeon.applyChangesInPlace(doc, changes)
+#### Pigeon.applyChangeInPlace(doc, change)
 
-Apply given changes to the document in-place.
+Apply given change operations to the document in-place.
 
 #### newDoc = Pigeon.change(doc, fn)
 
@@ -95,7 +95,7 @@ Change the document according to the given function, which receivs the document 
 ```javascript
 doc = Pigeon.from({ message: 'hello' })
 newDoc = Pigeon.change(doc, d => d.message = 'hey there')
-changes = Pigeon.getChanges(doc, newDoc)
+changes = Pigeon.getChange(doc, newDoc)
 ```
 
 #### changes = Pigeon.getHistory(doc)
