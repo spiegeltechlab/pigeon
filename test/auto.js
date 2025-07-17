@@ -425,6 +425,60 @@ suite('auto', (test) => {
         assert.deepEqual(doc1, { cards: ['A♤'] });
     });
 
+    test('uuid changes', async () => {
+        let doc1 = AutoPigeon.from({
+            uuids: [
+                {
+                    id: '4a6812a5-6877-438e-bdda-e1ecd8de6a29'
+                }
+            ]
+        });
+
+
+        let doc2 = AutoPigeon.from({
+            uuids: [
+                {
+                    id: '4a6812a5-6877-438e-bdda-e1ecd8de6a29'
+                },
+                {
+                    id: '024722e5-1760-427c-94cb-14b25d10a27a'
+                },
+                {
+                    id: 'c0741321-7faa-49ee-b291-f0e64d1caf31'
+                }
+            ]
+        });
+
+        const changes = AutoPigeon.getChange(doc1, doc2);
+        assert.deepEqual(changes.diff, [
+            {
+                op: 'add',
+                path: '/uuids/1',
+                value: { id: '024722e5-1760-427c-94cb-14b25d10a27a' }
+            },
+            {
+                op: 'add',
+                path: '/uuids/2',
+                value: { id: 'c0741321-7faa-49ee-b291-f0e64d1caf31' }
+            }
+        ]);
+
+        AutoPigeon.applyChangeInPlace(doc1, changes);
+        assert.deepEqual(doc1, {
+            uuids: [
+                {
+                    id: '4a6812a5-6877-438e-bdda-e1ecd8de6a29'
+                },
+                {
+                    id: '024722e5-1760-427c-94cb-14b25d10a27a'
+                },
+                {
+                    id: 'c0741321-7faa-49ee-b291-f0e64d1caf31'
+                }
+            ]
+        });
+    });
+
     // FAILED: (even before the reverse update)
     /* test('alias', async() => {
     let doc1 = AutoPigeon.from({ cards: [] });

@@ -94,7 +94,7 @@ function diffArray(l, r, path = '/') {
         }
 
         if (j < r.length && !(j in rlis)) {
-            adds.unshift(_op('add', _path(path, j, r[j + 1]), { value: r[j] }));
+            adds.push(_op('add', _path(path, j), { value: r[j] }));
             j++;
             continue;
         }
