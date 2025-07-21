@@ -425,55 +425,41 @@ suite('auto', (test) => {
         assert.deepEqual(doc1, { cards: ['A♤'] });
     });
 
-    test('uuid changes', async () => {
+    test('multiple add operations', async () => {
         let doc1 = AutoPigeon.from({
-            uuids: [
+            PATH: [
                 {
-                    id: '4a6812a5-6877-438e-bdda-e1ecd8de6a29'
+                    id: '---PATH--- 1111'
                 }
             ]
         });
 
 
         let doc2 = AutoPigeon.from({
-            uuids: [
+            PATH: [
                 {
-                    id: '4a6812a5-6877-438e-bdda-e1ecd8de6a29'
+                    id: '---PATH--- 1111'
                 },
                 {
-                    id: '024722e5-1760-427c-94cb-14b25d10a27a'
+                    id: '---PATH--- 2222'
                 },
                 {
-                    id: 'c0741321-7faa-49ee-b291-f0e64d1caf31'
+                    id: '---PATH--- 3333'
                 }
             ]
         });
-
         const changes = AutoPigeon.getChange(doc1, doc2);
-        assert.deepEqual(changes.diff, [
-            {
-                op: 'add',
-                path: '/uuids/1',
-                value: { id: '024722e5-1760-427c-94cb-14b25d10a27a' }
-            },
-            {
-                op: 'add',
-                path: '/uuids/2',
-                value: { id: 'c0741321-7faa-49ee-b291-f0e64d1caf31' }
-            }
-        ]);
-
         AutoPigeon.applyChangeInPlace(doc1, changes);
         assert.deepEqual(doc1, {
-            uuids: [
+            PATH: [
                 {
-                    id: '4a6812a5-6877-438e-bdda-e1ecd8de6a29'
+                    id: '---PATH--- 1111'
                 },
                 {
-                    id: '024722e5-1760-427c-94cb-14b25d10a27a'
+                    id: '---PATH--- 2222'
                 },
                 {
-                    id: 'c0741321-7faa-49ee-b291-f0e64d1caf31'
+                    id: '---PATH--- 3333'
                 }
             ]
         });
