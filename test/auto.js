@@ -425,6 +425,46 @@ suite('auto', (test) => {
         assert.deepEqual(doc1, { cards: ['A♤'] });
     });
 
+    test('multiple add operations', async () => {
+        let doc1 = AutoPigeon.from({
+            PATH: [
+                {
+                    id: '---PATH--- 1111'
+                }
+            ]
+        });
+
+
+        let doc2 = AutoPigeon.from({
+            PATH: [
+                {
+                    id: '---PATH--- 1111'
+                },
+                {
+                    id: '---PATH--- 2222'
+                },
+                {
+                    id: '---PATH--- 3333'
+                }
+            ]
+        });
+        const changes = AutoPigeon.getChange(doc1, doc2);
+        AutoPigeon.applyChangeInPlace(doc1, changes);
+        assert.deepEqual(doc1, {
+            PATH: [
+                {
+                    id: '---PATH--- 1111'
+                },
+                {
+                    id: '---PATH--- 2222'
+                },
+                {
+                    id: '---PATH--- 3333'
+                }
+            ]
+        });
+    });
+
     // FAILED: (even before the reverse update)
     /* test('alias', async() => {
     let doc1 = AutoPigeon.from({ cards: [] });
