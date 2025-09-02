@@ -1,9 +1,11 @@
 const { _clone, _objId } = require('./helpers');
 
-function reverse(changes) {
-    const reversed = _clone(changes).reverse();
+function reverse(changes, history = []) {
 
-    for (const change of reversed) {
+    const reversedChanges = _clone(changes).reverse();
+    const reversedHistory = _clone(history).reverse();
+
+    for (const change of reversedChanges) {
         if (change.op == 'add') {
             change.op = 'remove';
             const id = _objId(change.value);
@@ -25,9 +27,25 @@ function reverse(changes) {
             change.op = 'add';
             const parts = change.path.split('/');
             const lastPart = parts[parts.length - 1];
+            let cleanPartId = lastPart;
             if (lastPart.startsWith('[') && lastPart.endsWith(']')) {
                 parts[parts.length - 1] = '0';
                 change.path = parts.join('/');
+                cleanPartId = lastPart.replace(/^\[|\]$/g, '');
+            }
+
+            // The remove operation effectively turns into an add, but it doesn’t know what value should be added.
+            // That’s why we need to look up the most recent change in the history and use its previous value.
+            const lastChangeWithAdd = reversedHistory.find(change =>
+                change.diff.some(diffEntry =>
+                    diffEntry?.op === 'add' && diffEntry.value.id === cleanPartId
+                )
+            );
+            const addDiffsForRemoveDiff = lastChangeWithAdd?.diff.filter(diffEntry =>
+                diffEntry.op === 'add' && diffEntry.value.id === cleanPartId
+            );
+            if (Array.isArray(addDiffsForRemoveDiff) && addDiffsForRemoveDiff.length === 1 && addDiffsForRemoveDiff[0]?.value) {
+                change._prev = addDiffsForRemoveDiff[0].value;
             }
         }
 
@@ -52,7 +70,7 @@ function reverse(changes) {
         }
     }
 
-    return reversed;
+    return reversedChanges;
 }
 
 module.exports = reverse;

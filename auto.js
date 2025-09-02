@@ -92,7 +92,7 @@ class AutoPigeon {
                     change.client_id > clientId)
             ) {
                 const c = meta.get(doc).history.pop();
-                patch(doc, reverse(c.diff));
+                patch(doc, reverse(c.diff, history));
                 delete meta.get(doc).changeIds[c.change_id];
                 meta.get(doc).stash.push(c);
                 continue;
