@@ -46,8 +46,7 @@ suite("forward", (test) => {
             client_id: "cg40da6rfzu",
             seq: 9,
             change_id: "1kqpo59re54i",
-            msg_id: "cg40da6rfzu-1kqpo59re54i",
-            user_id: "47f1e906-4222-4041-a07f-9bf865b783bd",
+            msg_id: "cg40da6rfzu-1kqpo59re54i"
         });
 
         AutoPigeon.applyChangeInPlace(document, {
@@ -93,8 +92,7 @@ suite("forward", (test) => {
             client_id: "cg40da6rfzu",
             seq: 17,
             change_id: "a1f5tnv06yu",
-            msg_id: "cg40da6rfzu-a1f5tnv06yu",
-            user_id: "47f1e906-4222-4041-a07f-9bf865b783bd",
+            msg_id: "cg40da6rfzu-a1f5tnv06yu"
         });
 
         AutoPigeon.applyChangeInPlace(document, {
@@ -110,8 +108,7 @@ suite("forward", (test) => {
             client_id: "cg40da6rfzu",
             seq: 19,
             change_id: "gmar24cmu3",
-            msg_id: "cg40da6rfzu-gmar24cmu3",
-            user_id: "47f1e906-4222-4041-a07f-9bf865b783bd",
+            msg_id: "cg40da6rfzu-gmar24cmu3"
         });
 
         AutoPigeon.applyChangeInPlace(document, {
