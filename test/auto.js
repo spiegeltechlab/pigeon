@@ -425,6 +425,189 @@ suite('auto', (test) => {
         assert.deepEqual(doc1, { cards: ['A♤'] });
     });
 
+    test("applyChangesInPlace without _prev", async () => {
+        let document = AutoPigeon.from({
+            notifications: [
+                {
+                    id: "same_title_seo_title",
+                    type: "textinfo",
+                    label: "warning",
+                    title: "Der Titel und SEO-Titel sind gleich."
+                },
+                {
+                    id: "heading_min_length",
+                    type: "textinfo",
+                    label: "info",
+                    title: "Ungültige Dachzeile"
+                },
+            ],
+            last_modified: 1756468994,
+            seo_title: "",
+            slug: "slug",
+            social_title: "Titel",
+            title: "Titel",
+            updated_at: 1756468994,
+        });
+
+        AutoPigeon.applyChangeInPlace(document, {
+            type: "change",
+            diff: [
+                {
+                    op: "replace",
+                    path: "/slug",
+                    value: "",
+                },
+                {
+                    op: "replace",
+                    path: "/social_title",
+                    value: "",
+                },
+            ],
+            timestamp_ms: 1756469010874,
+            client_id: _id(),
+            change_id: "1kqpo59re54i",
+        });
+
+        AutoPigeon.applyChangeInPlace(document, {
+            type: "change",
+            diff: [
+                {
+                    op: "add",
+                    path: "/notifications/0",
+                    value: {
+                        id: "seo_title_min_length",
+                        type: "textinfo",
+                        label: "warning",
+                        title: "Ungültige SEO-Titellänge",
+                    },
+                },
+                {
+                    op: "remove",
+                    path: "/notifications/[same_title_seo_title]",
+                },
+            ],
+            timestamp_ms: 1756469010877,
+            client_id: _id(),
+            change_id: _id(),
+        });
+
+        AutoPigeon.applyChangeInPlace(document, {
+            type: "change",
+            diff: [
+                {
+                    op: "replace",
+                    path: "/seo_title",
+                    value: "Titel",
+                },
+                {
+                    op: "replace",
+                    path: "/social_title",
+                    value: "Titel",
+                },
+            ],
+            timestamp_ms: 1756469012165,
+            client_id: _id(),
+            change_id: _id(),
+        });
+
+        AutoPigeon.applyChangeInPlace(document, {
+            type: "change",
+            diff: [
+                {
+                    op: "replace",
+                    path: "/slug",
+                    value: "slug",
+                },
+            ],
+            timestamp_ms: 1756469012168,
+            client_id: _id(),
+            change_id: _id(),
+        });
+
+        AutoPigeon.applyChangeInPlace(document, {
+            type: "change",
+            diff: [
+                {
+                    op: "add",
+                    path: "/notifications/0",
+                    value: {
+                        id: "same_title_seo_title",
+                        type: "textinfo",
+                        label: "warning",
+                        title: "Der Titel und SEO-Titel sind gleich."
+                    },
+                },
+                {
+                    op: "remove",
+                    path: "/notifications/[seo_title_min_length]",
+                },
+            ],
+            timestamp_ms: 1756469012173,
+            client_id: _id(),
+            change_id: _id(),
+        });
+
+        AutoPigeon.applyChangeInPlace(document, {
+            type: "change",
+            diff: [
+                {
+                    op: "replace",
+                    path: "/updated_at",
+                    value: 1756469012,
+                },
+                {
+                    op: "replace",
+                    path: "/last_modified",
+                    value: 1756469012,
+                },
+            ],
+            timestamp_ms: 1756469012094,
+            client_id: _id(),
+            change_id: _id(),
+        });
+
+        AutoPigeon.applyChangeInPlace(document, {
+            type: "change",
+            diff: [
+                {
+                    op: "replace",
+                    path: "/updated_at",
+                    value: 1756469015,
+                },
+                {
+                    op: "replace",
+                    path: "/last_modified",
+                    value: 1756469015,
+                },
+            ],
+            timestamp_ms: 1756469015022,
+
+        });
+
+        assert.deepEqual(document, {
+            notifications: [
+                {
+                    id: "same_title_seo_title",
+                    type: "textinfo",
+                    label: "warning",
+                    title: "Der Titel und SEO-Titel sind gleich."
+                },
+                {
+                    id: "heading_min_length",
+                    type: "textinfo",
+                    label: "info",
+                    title: "Ungültige Dachzeile"
+                },
+            ],
+            last_modified: 1756469015,
+            seo_title: "Titel",
+            slug: "slug",
+            social_title: "Titel",
+            title: "Titel",
+            updated_at: 1756469015,
+        });
+    });
+
     test('multiple add operations', async () => {
         let doc1 = AutoPigeon.from({
             PATH: [

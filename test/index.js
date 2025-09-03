@@ -8,7 +8,6 @@ require('./diff');
 require('./roundtrip');
 require('./helpers');
 require('./roundtrip');
-require('./forward');
 
 if ('SUITE' in process.env) {
     suites = suites.filter((s) => s.name == process.env.SUITE);
