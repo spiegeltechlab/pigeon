@@ -465,7 +465,7 @@ suite('auto', (test) => {
             ],
             timestamp_ms: 1756469010874,
             client_id: _id(),
-            change_id: "1kqpo59re54i",
+            change_id: _id(),
         });
 
         AutoPigeon.applyChangeInPlace(document, {
