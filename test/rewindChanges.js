@@ -2,9 +2,6 @@ const assert = require('assert');
 const suite = require('./index');
 
 const AutoPigeon = require('../auto');
-const { _configure } = require('../helpers');
-
-const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
 suite('rewindChanges', (test) => {
      test("replace without _prev", async () => {
