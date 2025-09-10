@@ -8,6 +8,7 @@ require('./diff');
 require('./roundtrip');
 require('./helpers');
 require('./roundtrip');
+require('./rewindChanges');
 
 if ('SUITE' in process.env) {
     suites = suites.filter((s) => s.name == process.env.SUITE);
