@@ -94,16 +94,17 @@ function diffArray(l, r, path = '/') {
         }
 
         if (j < r.length && !(j in rlis)) {
-            const nextIndexExistsInLeft = (j + 1) in l;
-            const insertPath = nextIndexExistsInLeft
+            // Check if the next element in r matches an element in l
+            const nextInRightHasMatch = (j + 1) in rlis;
+            const insertPath = nextInRightHasMatch
                 ? _path(path, j, r[j + 1])
                 : _path(path, j);
-                const op = _op('add', insertPath, { value: r[j] });
-                if (l.length >= r.length) {
-                    adds.unshift(op);
-                } else {
-                    adds.push(op);
-                }
+            const op = _op('add', insertPath, { value: r[j] });
+            if (l.length >= r.length) {
+                adds.unshift(op);
+            } else {
+                adds.push(op);
+            }
             j++;
             continue;
         }

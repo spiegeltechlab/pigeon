@@ -482,6 +482,102 @@ suite('auto', (test) => {
     assert.deepEqual(doc1, { cards: ['A♤'] });
     assert.deepEqual(doc2, { cards: ['A♤'] });
   }); */
+
+    test('apply changes to nested objects', async () => {
+        let document1 = AutoPigeon.from({
+            body: [
+                {
+                    "id": "gB0qygBzZJ",
+                    "type": "paragraph",
+                    "data": {
+                        "text": ""
+                    }
+                },
+                {
+                    "id": "sVFk0InpQm",
+                    "type": "paragraph",
+                    "data": {
+                        "text": ""
+                    }
+                },
+                {
+                    "id": "6r-ileSgKW",
+                    "type": "paragraph",
+                    "data": {
+                        "text": ""
+                    }
+                }
+            ]
+        });
+
+        let document2 = AutoPigeon.from({
+            body: [
+                {
+                    "id": "gB0qygBzZJ",
+                    "type": "paragraph",
+                    "data": {
+                        "text": ""
+                    }
+                },
+                {
+                    "id": "VY0KnGJaCN",
+                    "type": "list",
+                    "data": {
+                        "text": "<ul><li><p></p></li></ul>"
+                    }
+                },
+                {
+                    "id": "cMgUL1EEkN",
+                    "type": "paragraph",
+                    "data": {
+                        "text": "\t•\t\t⁃\tFactchecking"
+                    }
+                },
+                {
+                    "id": "6r-ileSgKW",
+                    "type": "paragraph",
+                    "data": {
+                        "text": ""
+                    }
+                }
+            ]
+        });
+        const changes = AutoPigeon.getChange(document1, document2);
+
+        AutoPigeon.applyChangeInPlace(document1, changes);
+        assert.deepEqual(document1, {
+            body: [
+                {
+                    "id": "gB0qygBzZJ",
+                    "type": "paragraph",
+                    "data": {
+                        "text": ""
+                    }
+                },
+                {
+                    "id": "VY0KnGJaCN",
+                    "type": "list",
+                    "data": {
+                        "text": "<ul><li><p></p></li></ul>"
+                    }
+                },
+                {
+                    "id": "cMgUL1EEkN",
+                    "type": "paragraph",
+                    "data": {
+                        "text": "\t•\t\t⁃\tFactchecking"
+                    }
+                },
+                {
+                    "id": "6r-ileSgKW",
+                    "type": "paragraph",
+                    "data": {
+                        "text": ""
+                    }
+                }
+            ]
+        });
+    });
 });
 
 function _id() {
